@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎮 بازی دوز | Tic-Tac-Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1A1A2E;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(45deg, rgba(0,245,255,0.03) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,0,127,0.03) 25%, transparent 25%),
+                linear-gradient(135deg, rgba(0,245,255,0.03) 25%, transparent 25%),
+                linear-gradient(-135deg, rgba(255,0,127,0.03) 25%, transparent 25%);
+            background-size: 60px 60px;
+            padding: 16px;
+        }
+        .phone-frame {
+            max-width: 375px;
+            width: 100%;
+            background: #1A1A2E;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
+            height: 750px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .phone-inner {
+            padding: 20px 16px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,0,127,0.2);
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 24px;
+            background: linear-gradient(135deg, #00F5FF, #FF007F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-icons { display: flex; gap: 16px; }
+        .header-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .header-icon:hover {
+            background: rgba(0,245,255,0.15);
+            box-shadow: 0 0 20px rgba(0,245,255,0.2);
+        }
+        .game-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #00F5FF;
+        }
+        .game-status {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #B0B0B0;
+            min-height: 24px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 280px;
+            margin: 0 auto 20px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #fff;
+        }
+        .cell:hover {
+            background: rgba(0,245,255,0.1);
+            border-color: #00F5FF;
+        }
+        .cell.x { color: #FF007F; text-shadow: 0 0 20px rgba(255,0,127,0.5); }
+        .cell.o { color: #00F5FF; text-shadow: 0 0 20px rgba(0,245,255,0.5); }
+        .cell.win {
+            background: rgba(0,245,255,0.2);
+            border-color: #00F5FF;
+            box-shadow: 0 0 30px rgba(0,245,255,0.3);
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 10px 24px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(255,0,127,0.2));
+            border-color: #00F5FF;
+            box-shadow: 0 0 20px rgba(0,245,255,0.3);
+        }
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 8px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            background: rgba(26,26,46,0.95);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #B0B0B0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            position: relative;
+        }
+        .nav-item.active { color: #00F5FF; }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: #00F5FF;
+            border-radius: 2px;
+            box-shadow: 0 0 12px #00F5FF;
+        }
+        .nav-item i { font-size: 22px; }
+        .icon-home::before { content: '🏠'; }
+        .icon-games::before { content: '🎮'; }
+        .icon-rank::before { content: '🏆'; }
+        .icon-settings::before { content: '⚙️'; }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-inner">
+            <div class="header">
+                <div class="logo">PlayVerse</div>
+                <div class="header-icons">
+                    <div class="header-icon" onclick="alert('پروفایل')">👤</div>
+                    <div class="header-icon" onclick="alert('اعلان‌ها')">🔔</div>
+                </div>
+            </div>
+            
+            <!-- صفحه بازی -->
+            <div id="gameContainer">
+                <div class="game-title">✕ ○ دوز</div>
+                <div class="game-status" id="status">نوبت: ❌ (X)</div>
+                <div class="board" id="board">
+                    <div class="cell" data-index="0" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="1" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="2" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="3" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="4" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="5" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="6" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="7" onclick="handleCell(this)"></div>
+                    <div class="cell" data-index="8" onclick="handleCell(this)"></div>
+                </div>
+                <div class="controls">
+                    <button class="btn" onclick="resetGame()">🔄 شروع جدید</button>
+                    <button class="btn" onclick="toggleMode()">🤖 تغییر حریف</button>
+                </div>
+                <div style="text-align:center;margin-top:16px;color:#B0B0B0;font-size:13px;">
+                    حالت: <span id="modeLabel">دو نفره</span>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="alert('صفحه اصلی')">
+                <i class="icon-home"></i><span>خانه</span>
+            </div>
+            <div class="nav-item" onclick="alert('لیست بازی‌ها')">
+                <i class="icon-games"></i><span>بازی‌ها</span>
+            </div>
+            <div class="nav-item" onclick="alert('رتبه‌بندی')">
+                <i class="icon-rank"></i><span>رتبه‌بندی</span>
+            </div>
+            <div class="nav-item" onclick="alert('تنظیمات')">
+                <i class="icon-settings"></i><span>تنظیمات</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        // ---------- منطق بازی ----------
+        let board = ['','','','','','','','',''];
+        let currentPlayer = 'X'; // X همیشه شروع می‌کنه
+        let gameOver = false;
+        let vsAI = false; // false = دو نفره, true = با هوش مصنوعی
+
+        function handleCell(cell) {
+            if (gameOver) return;
+            const index = parseInt(cell.dataset.index);
+            if (board[index] !== '') return;
+            if (vsAI && currentPlayer === 'O') return; // نوبت هوش مصنوعی
+
+            makeMove(index, currentPlayer);
+            if (!gameOver && vsAI && currentPlayer === 'O') {
+                // نوبت هوش مصنوعی بعد از حرکت کاربر
+                setTimeout(aiMove, 300);
+            }
+        }
+
+        function makeMove(index, player) {
+            board[index] = player;
+            const cell = document.querySelector(`.cell[data-index="${index}"]`);
+            cell.textContent = player === 'X' ? '✕' : '○';
+            cell.classList.add(player === 'X' ? 'x' : 'o');
+
+            if (checkWinner(player)) {
+                gameOver = true;
+                document.getElementById('status').innerHTML = 
+                    `<span style="color:${player === 'X' ? '#FF007F' : '#00F5FF'}">🎉 ${player === 'X' ? '❌' : '⭕'} برنده شد!</span>`;
+                highlightWinner(player);
+                return;
+            }
+            if (board.every(cell => cell !== '')) {
+                gameOver = true;
+                document.getElementById('status').innerHTML = '😐 مساوی!';
+                return;
+            }
+            // تغییر نوبت
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').textContent = 
+                `نوبت: ${currentPlayer === 'X' ? '❌ (X)' : '⭕ (O)'}`;
+        }
+
+        function checkWinner(player) {
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            return winPatterns.some(pattern => 
+                pattern.every(index => board[index] === player)
+            );
+        }
+
+        function highlightWinner(player) {
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            for (let pattern of winPatterns) {
+                if (pattern.every(index => board[index] === player)) {
+                    pattern.forEach(index => {
+                        document.querySelector(`.cell[data-index="${index}"]`).classList.add('win');
+                    });
+                    break;
+                }
+            }
+        }
+
+        function resetGame() {
+            board = ['','','','','','','','',''];
+            currentPlayer = 'X';
+            gameOver = false;
+            document.getElementById('status').textContent = 'نوبت: ❌ (X)';
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.textContent = '';
+                cell.className = 'cell';
+            });
+            if (vsAI && currentPlayer === 'O') {
+                // اگر هوش مصنوعی شروع کننده بود (اما اینجا همیشه X شروع می‌کنه)
+                // پس نیازی نیست
+            }
+        }
+
+        // هوش مصنوعی ساده (تصادفی)
+        function aiMove() {
+            if (gameOver) return;
+            if (currentPlayer !== 'O') return; // فقط وقتی نوبت O هست
+            const emptyIndices = board.reduce((acc, val, idx) => val === '' ? [...acc, idx] : acc, []);
+            if (emptyIndices.length === 0) return;
+            const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            makeMove(randomIndex, 'O');
+        }
+
+        function toggleMode() {
+            vsAI = !vsAI;
+            document.getElementById('modeLabel').textContent = vsAI ? 'با هوش مصنوعی' : 'دو نفره';
+            resetGame();
+            if (vsAI && currentPlayer === 'O') {
+                // اگر هوش مصنوعی شروع کنه (اینجا ممکنه نباشه چون X شروع می‌کنه)
+                // اما برای حالت random می‌تونیم
+            }
+        }
+
+        // مقداردهی اولیه
+        document.getElementById('modeLabel').textContent = 'دو نفره';
+    </script>
+</body>
+</html>
